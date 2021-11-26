@@ -6,6 +6,8 @@ const { PORT } = process.env;
 
 const carsRouter = require('./app/routes/cars-routes');
 
+//GET /api/v1/cars
+//GET /api/v1/cars/23
 app.use('/api/v1/cars/', carsRouter);
 //app.use('/api/v1/users/', usersRouter);
 
