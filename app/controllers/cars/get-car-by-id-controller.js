@@ -1,5 +1,6 @@
 'use strict';
 const createJsonError = require('../../errors/create-json-error');
+const throwJsonError = require('../../errors/throw-json-error');
 const { findCarById } = require('../../repositories/cars-repository');
 
 async function getCarById(req, res) {
@@ -8,10 +9,7 @@ async function getCarById(req, res) {
     //Si id es un numero
     const car = await findCarById(id);
     if (car.length === 0) {
-      const error = new Error('Parámetro no válido');
-      error.status = 400;
-
-      throw error;
+      throwJsonError(400, 'Parámetro no válido');
     }
     res.status(200);
     res.send(car); //res.json(car);

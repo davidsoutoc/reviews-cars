@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const { PORT } = process.env;
+// Recibir datos como json en el body
+app.use(express.json());
 
 const carsRouter = require('./app/routes/cars-routes');
 

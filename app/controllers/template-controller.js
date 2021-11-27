@@ -1,6 +1,7 @@
 'use strict';
 const createJsonError = require('../errors/create-json-error');
 // Require funcion BD
+// SChema Joi
 
 async function nombreFuncion(req, res) {
   try {
@@ -8,7 +9,6 @@ async function nombreFuncion(req, res) {
     //LLAMADA BASE DATOS
     // VALIDAR RESULTADO
     res.send();
-
   } catch (error) {
     createJsonError(error, res);
   }
