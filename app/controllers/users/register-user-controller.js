@@ -9,6 +9,7 @@ const {
   createUser,
   findUserByEmail,
 } = require('../../repositories/users-repository');
+const { sendMailRegister } = require('../../helpers/mail-smtp');
 
 const schema = Joi.object().keys({
   name: Joi.string().min(4).max(120).required(),
@@ -41,7 +42,8 @@ async function registerUser(req, res) {
     // LLamamos a la base de datos - createUser
     const userId = await createUser(userDB);
     // Enviar email de verificacion cuenta
-    console.log(`http://localhost:3000/api/v1/users/activation?code=${verificationCode}`);
+    await sendMailRegister(name, email);
+    //console.log(`http://localhost:3000/api/v1/users/activation?code=${verificationCode}`);
     res.status(201);
     res.send({ id: userId });
   } catch (error) {
