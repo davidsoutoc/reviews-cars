@@ -1,17 +1,19 @@
 'use strict';
 
 const express = require('express');
+const validateUser = require('../controllers/users/activate-user');
 const router = express.Router();
 const registerUser = require('../controllers/users/register-user-controller');
 
 router.route('/').post(registerUser);
+router.route('/activation').get(validateUser);
 
 module.exports = router;
 
 // Endpoint Públicos
 // POST api/v1/users = registerUser
 // POST api/v1/users/login
-// POST api/v1/users/activation <== activar usuario
+// GET api/v1/users/activation?code= <== activar usuario
 // Endpoints Privados
 // GET api/v1/users <== solo admin
 // GET api/v1/users/:id <== solo propietario
