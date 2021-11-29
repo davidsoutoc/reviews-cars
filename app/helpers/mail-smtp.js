@@ -29,7 +29,7 @@ async function sendMailRegister(name, email, code) {
   };
 
   const data = await transporter.sendMail(mailData);
-  console.log('DATA', data);
+
   return data;
 }
 async function sendMailCorrectValidation(name, email) {
@@ -42,7 +42,7 @@ async function sendMailCorrectValidation(name, email) {
   };
 
   const data = await transporter.sendMail(mailData);
-  console.log('DATA', data);
+
   return data;
 }
 

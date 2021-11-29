@@ -14,12 +14,12 @@ async function createUser(user) {
   const [created] = await pool.query(sql, [
     name, email, passwordHash, verificationCode, 'reader', now
   ]);
-  console.log('created', created);
+
   return created.insertId;
 }
 async function findUserByEmail(email) {
   const pool = await getPool();
-  const sql = 'SELECT id, name, email FROM users WHERE email = ?';
+  const sql = 'SELECT id, name, email, role, password, verifiedAt FROM users WHERE email = ?';
   const [user] = await pool.query(sql, email);
 
   return user[0];
@@ -44,7 +44,7 @@ async function getUserByVerificationCode(code) {
     FROM users WHERE verificationCode = ?
   `;
   const [user] = await pool.query(sql, code);
-  
+
   return user[0];
 }
 module.exports = {

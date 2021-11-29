@@ -21,10 +21,8 @@ const schema = Joi.object().keys({
 async function registerUser(req, res) {
   try {
     const { body } = req;
-    console.log('body', body);
     await schema.validateAsync(body);
     const { name, email, password } = body;
-    console.log('password', password);
     const user = await findUserByEmail(email);
     if (user) {
       // const error = new Error('Ya existe un usuario con ese email');
