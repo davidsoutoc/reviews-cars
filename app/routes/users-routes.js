@@ -5,10 +5,15 @@ const validateUser = require('../controllers/users/activate-user');
 const router = express.Router();
 const registerUser = require('../controllers/users/register-user-controller');
 const loginUser = require('../controllers/users/login-user-controller');
+const getUsers = require('../controllers/users/get-users-controller');
+const validateAuth = require('../middlewares/validate-auth');
 
+// TODAS LAS URLS /api/v1/users...
 router.route('/').post(registerUser);
 router.route('/activation').get(validateUser);
 router.route('/login').post(loginUser);
+
+router.route('/').all(validateAuth).get(getUsers);
 
 module.exports = router;
 
