@@ -24,6 +24,15 @@ async function findUserByEmail(email) {
 
   return user[0];
 }
+
+async function findUserById(id) {
+  const pool = await getPool();
+  const sql = 'SELECT name, email, image, role, createdAt FROM users WHERE id = ?';
+  const [user] = await pool.query(sql, id);
+
+  return user[0];
+}
+
 async function activateUser(verificationCode) {
   const now = new Date();
   const pool = await getPool();
@@ -55,10 +64,20 @@ async function findAllUsers() {
   return users;
 }
 
+async function removeUserById(id) {
+  const pool = await getPool();
+  const sql = 'DELETE FROM users WHERE id = ?';
+  await pool.query(sql, id);
+
+  return true;
+}
+
 module.exports = {
   activateUser,
   createUser,
   findAllUsers,
   findUserByEmail,
+  findUserById,
   getUserByVerificationCode,
+  removeUserById,
 }

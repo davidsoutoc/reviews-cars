@@ -9,7 +9,7 @@
 			"name": "Cars",
 			"item": [
 				{
-					"name": "getCars",
+					"name": "Get Cars",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -28,7 +28,7 @@
 					"response": []
 				},
 				{
-					"name": "getCarById",
+					"name": "Get Car By Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -42,6 +42,81 @@
 								"v1",
 								"cars",
 								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review By CarId",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Un desastre de coche\",\n    \"rating\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/cars/3/reviews",
+							"host": [
+								"{{backendUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cars",
+								"3",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\": \"Un desastre de coche\",\n    \"rating\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/cars/5/reviews",
+							"host": [
+								"{{backendUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cars",
+								"5",
+								"reviews"
 							]
 						}
 					},
@@ -138,12 +213,51 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:3000/api/v1/users/login",
-							"protocol": "http",
+							"raw": "{{backendUrl}}/api/v1/users/login",
 							"host": [
-								"localhost"
+								"{{backendUrl}}"
 							],
-							"port": "3000",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login ADMIN",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"pm.environment.set(\"accessToken\", response.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin@hackaboss.com\",\n    \"password\": \"1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/users/login",
+							"host": [
+								"{{backendUrl}}"
+							],
 							"path": [
 								"api",
 								"v1",
@@ -160,12 +274,10 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/api/v1/users/activation?code=xxxxxxxxx",
-							"protocol": "http",
+							"raw": "{{backendUrl}}/api/v1/users/activation?code=xxxxxxxxx",
 							"host": [
-								"localhost"
+								"{{backendUrl}}"
 							],
-							"port": "3000",
 							"path": [
 								"api",
 								"v1",
@@ -177,6 +289,32 @@
 									"key": "code",
 									"value": "xxxxxxxxx"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/users/profile",
+							"host": [
+								"{{backendUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"profile"
 							]
 						}
 					},
