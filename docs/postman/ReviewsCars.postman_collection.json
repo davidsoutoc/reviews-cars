@@ -121,6 +121,63 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Upload Profile Image",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "profileImage",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/users/upload",
+							"host": [
+								"{{backendUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Rating By CarId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{backendUrl}}/api/v1/cars/3/rating",
+							"host": [
+								"{{backendUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"cars",
+								"3",
+								"rating"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
