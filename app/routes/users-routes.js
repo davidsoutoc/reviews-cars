@@ -9,6 +9,7 @@ const getUsers = require('../controllers/users/get-users-controller');
 const getUserProfile = require('../controllers/users/get-user-profile-controller');
 const validateAuth = require('../middlewares/validate-auth');
 const deleteUserById = require('../controllers/users/delete-user-by-id-controller');
+const uploadImageProfile = require('../controllers/users/upload-image-profile-controller');
 
 // TODAS LAS URLS /api/v1/users...
 router.route('/').post(registerUser);
@@ -19,6 +20,7 @@ router.route('/login').post(loginUser);
 router.route('/').all(validateAuth).get(getUsers);
 router.route('/:id').all(validateAuth).delete(deleteUserById);
 router.route('/profile').all(validateAuth).get(getUserProfile);
+router.route('/upload').all(validateAuth).post(uploadImageProfile);
 
 module.exports = router;
 

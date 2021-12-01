@@ -72,6 +72,14 @@ async function removeUserById(id) {
   return true;
 }
 
+async function uploadUserImage(id, image) {
+  const pool = await getPool();
+  const sql = 'UPDATE users SET image = ? WHERE id = ?';
+  await pool.query(sql, [image, id]);
+
+  return true;
+}
+
 module.exports = {
   activateUser,
   createUser,
@@ -80,4 +88,5 @@ module.exports = {
   findUserById,
   getUserByVerificationCode,
   removeUserById,
+  uploadUserImage,
 }
