@@ -1,10 +1,11 @@
 'use strict';
 
-const throwJsonError = require("../errors/throw-json-error");
-
 function isAdmin(role) {
   if (role !== 'admin') {
-    throwJsonError(401, 'No tienes permisos para realizar esta acción');
+    const error = new Error('No tienes permisos para realizar esta acción');
+    error.status = 401;
+
+    throw error;
   }
 
   return true;

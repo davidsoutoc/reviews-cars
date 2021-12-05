@@ -19,7 +19,7 @@ function validateAuth(req, res, next) {
     const { headers } = req;
     const token = extractAccessToken(headers);
     const decodedToken = jwt.verify(token, JWT_SECRET);
-    console.log('token', decodedToken);
+
     const { id, name, role } = decodedToken;
     req.auth = { id, name, role };
 

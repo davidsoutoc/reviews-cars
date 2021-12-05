@@ -11,6 +11,8 @@ const {
 } = require('../../repositories/users-repository');
 const { sendMailRegister } = require('../../helpers/mail-smtp');
 
+const { HTTP_SERVER_DOMAIN } = process.env;
+
 const schema = Joi.object().keys({
   name: Joi.string().min(4).max(120).required(),
   email: Joi.string().email().required(),
@@ -29,7 +31,7 @@ async function registerUser(req, res) {
       // error.status = 400; //409 - Conflict
       // throw error;
       // Este codigo de arriba se reemplaza por una funcion
-      throwJsonError(400, 'Ya existe un usuario con ese email');
+      throwJsonError(409, 'Ya existe un usuario con ese email');
     }
     // Crear el Hash el password
     const passwordHash = await bcrypt.hash(password, 12);
@@ -40,10 +42,23 @@ async function registerUser(req, res) {
     // LLamamos a la base de datos - createUser
     const userId = await createUser(userDB);
     // Enviar email de verificacion cuenta
-    await sendMailRegister(name, email);
-    //console.log(`http://localhost:3000/api/v1/users/activation?code=${verificationCode}`);
+    await sendMailRegister(name, email, verificationCode);
+
+    // Creamos link de activación y lo mostramos por si el email no funciona
+    // pero este parámetro no debería formar parte de la repuesta del endpoint
+    // pq para activar el usuario debería hacerse siempre desde el email
+    const activationLink = `${HTTP_SERVER_DOMAIN}/api/v1/users/activation?code=${verificationCode}`;
+
     res.status(201);
-    res.send({ id: userId });
+    // === RESPUESTA INCORRECTA, PUESTA SOLO PARA FACILITAR ACTIVACION USUARIO ===
+    // res.send({
+    //   id: userId,
+    //   activationLink,
+    // });
+    // ==== RESPUESTA CORRECTA ===
+    res.send({
+      id: userId,
+    });
   } catch (error) {
     createJsonError(error, res);
   }

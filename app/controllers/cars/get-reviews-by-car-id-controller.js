@@ -17,7 +17,7 @@ async function getReviewsByCarId(req, res) {
     }
     const reviews = await findReviewsByCarId(carId);
     res.status(200);
-    res.send(reviews);
+    res.send({ data: reviews });
 
   } catch (error) {
     createJsonError(error, res);

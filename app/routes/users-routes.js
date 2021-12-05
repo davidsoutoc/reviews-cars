@@ -1,36 +1,54 @@
 'use strict';
 
 const express = require('express');
-const validateUser = require('../controllers/users/activate-user');
 const router = express.Router();
+const deleteUserById = require('../controllers/users/delete-user-by-id-controller');
+const validateUser = require('../controllers/users/activate-user-controller');
 const registerUser = require('../controllers/users/register-user-controller');
 const loginUser = require('../controllers/users/login-user-controller');
-const getUsers = require('../controllers/users/get-users-controller');
 const getUserProfile = require('../controllers/users/get-user-profile-controller');
-const validateAuth = require('../middlewares/validate-auth');
-const deleteUserById = require('../controllers/users/delete-user-by-id-controller');
+const getUserReviewsById = require('../controllers/users/get-user-reviews-by-id-controller');
+const getUsers = require('../controllers/users/get-users-controller');
+const randomUser = require('../controllers/users/random-user-controller');
 const uploadImageProfile = require('../controllers/users/upload-image-profile-controller');
+const updateUser = require('../controllers/users/update-user-controller');
+const validateAuth = require('../middlewares/validate-auth');
 
-// TODAS LAS URLS /api/v1/users...
+// Todas las URLs serán con este formato /api/v1/users/...
+
+// Endpoints Públicos
 router.route('/').post(registerUser);
 router.route('/activation').get(validateUser);
 router.route('/login').post(loginUser);
+// Ejemplo de como coger información de usaurios aleatorios de
+// la api https://randomuser.me/api
+router.route('/random').get(randomUser);
 
-//PRIVADAS
-router.route('/').all(validateAuth).get(getUsers);
-router.route('/:id').all(validateAuth).delete(deleteUserById);
-router.route('/profile').all(validateAuth).get(getUserProfile);
-router.route('/upload').all(validateAuth).post(uploadImageProfile);
+// Endpoints Privados
+router
+  .route('/')
+  .all(validateAuth)
+  .get(getUsers)
+  .put(updateUser);
+
+router
+  .route('/:id')
+  .all(validateAuth)
+  .delete(deleteUserById);
+
+router
+  .route('/:id/reviews')
+  .all(validateAuth)
+  .get(getUserReviewsById);
+
+router
+  .route('/profile')
+  .all(validateAuth)
+  .get(getUserProfile);
+
+  router
+  .route('/upload')
+  .all(validateAuth)
+  .post(uploadImageProfile);
 
 module.exports = router;
-
-// Endpoint Públicos
-// POST api/v1/users = registerUser
-// POST api/v1/users/login
-// GET api/v1/users/activation?code= <== activar usuario
-// Endpoints Privados
-// GET api/v1/users <== solo admin
-// GET api/v1/users/:id <== solo propietario
-// PUT api/v1/users/:id
-// PUT api/v1/users/:id/avatar
-// DELETE api/v1/users/:id <== solo el admin puede borrar usuarios

@@ -3,40 +3,59 @@
 const Joi = require('joi');
 const createJsonError = require('../../errors/create-json-error');
 const throwJsonError = require('../../errors/throw-json-error');
+const uploadImage = require('../../helpers/upload-image');
 const { isAdmin } = require('../../helpers/utils');
+const { addImageByCarId, removePrincipalByCarId } = require('../../repositories/car-images-repository');
+
+const { HTTP_SERVER_DOMAIN, PATH_CARS_IMAGE } = process.env;
 
 const schema = Joi.number().positive().integer().required();
+const schemaPrincipal = Joi.boolean();
 
 async function uploadCarImageById(req, res) {
   try {
     const { carId } = req.params;
-    //Validamos del carId
+    // Validamos del carId
     await schema.validateAsync(carId);
+    // Obtenemos el role del usuario
     const { role } = req.auth;
-    isAdmin();
+    // Chequeamos si el usuario es Administrador
+    isAdmin(role);
+
+    // Al subir una imagen tenemos un campo 'principal' true/false
+    // para indicar si la imagen es la imagen que se mostrará como
+    // imagen principal del coche
+    const { body } = req;
+    const { principal } = body;
+    await schemaPrincipal.validateAsync(principal);
 
     const { files } = req;
     if (!files || Object.keys(files).length === 0) {
       throwJsonError(400, 'No se ha seleccionado ningún fichero');
     }
+
     const { imageCar } = files;
     if (!imageCar) {
       throwJsonError(400, 'Fichero subido no válido');
     }
-
     if (!imageCar.mimetype.startsWith('image')) {
       throwJsonError(400, 'Formato no valido');
     }
-    const { PATH_CARS_IMAGE } = process.env;
-    await uploadImage({
+
+    const processImage = await uploadImage({
       imageData: imageCar.data,
       destination: `${PATH_CARS_IMAGE}/${carId}`,
-      width: 300,
-      height: 300,
+      width: 600,
+      height: 600,
       codImage: carId,
     });
+    if (principal) {
+      await removePrincipalByCarId(carId);
+    }
+    await addImageByCarId(carId, processImage, principal);
 
-
+    res.status(201);
+    res.send({ image: `${HTTP_SERVER_DOMAIN}/${PATH_CARS_IMAGE}/${carId}/${processImage}` });
   } catch (error) {
     createJsonError(error, res);
   }

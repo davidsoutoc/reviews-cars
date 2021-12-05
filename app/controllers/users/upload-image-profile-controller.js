@@ -1,54 +1,67 @@
 'use strict';
+
 const randomstring = require('randomstring');
+const createJsonError = require('../../errors/create-json-error');
 const path = require('path');
 const fs = require('fs');
-const createJsonError = require('../../errors/create-json-error');
+const {
+  findUserProfileImage,
+  uploadUserProfileImage,
+} = require('../../repositories/users-repository');
 const throwJsonError = require('../../errors/throw-json-error');
-const { findUserById, uploadUserImage } = require('../../repositories/users-repository');
-const { HTTP_SERVER, PATH_USER_IMAGE } = process.env;
 
-const validExtension = ['.jpeg', '.jpg', '.png'];
+
+const validExtensions = ['.jpeg', '.jpg', '.png'];
+
 async function uploadImageProfile(req, res) {
   try {
-    // Obtenemos el id que venia en el JWT
+    // Obtenemos el id del JWT
     const { id } = req.auth;
-    // Los ficheros/imagenes vienen en la cabecera  req en el objeto files
+    // Las imagenes vienen dentro de la cabecera req en el objeto files
+    // Comprobamos q existe alguna imagen
     const { files } = req;
     if (!files || Object.keys(files).length === 0) {
       throwJsonError(400, 'No se ha seleccionado ningún fichero');
     }
-    // profileImage es el nombre de la variable que usamos en el postman
-    const { profileImage } = files;
-    console.log('profileImage', profileImage);
-    const { name } = profileImage;
-    const extension = path.extname(name);
-    if (!validExtension.includes(extension)) {
-      throwJsonError(400, 'Formato no válido');
-    }
-    const user = await findUserById(id);
-    const { image } = user;
 
-    const pathProfileImage = `${__dirname}/../../../public/${PATH_USER_IMAGE}`;
-    // Borramos el avatar original si existe
-    if (image) {
-      fs.unlink(`${pathProfileImage}/${image}`, () => {
-        console.log('Imagen borrada correctamente');
+    // profileImage es el nombre que enviamos desde el postman,
+    // si enviamos
+    const { profileImage } = files;
+    const extension = path.extname(profileImage.name);
+
+    if (!validExtensions.includes(extension)) {
+      throwJsonError(400, 'Formato no valido');
+    }
+
+    const { HTTP_SERVER_DOMAIN, PATH_USER_IMAGE } = process.env;
+    // Cogemos la imagen de perfil original
+    const user = await findUserProfileImage(id);
+    // Generamos la ruta completa a la carpeta donde situamos las imagenes de perfil
+    const pathProfileImageFolder = `${__dirname}/../../../public/${PATH_USER_IMAGE}`;
+
+    // Borramos la imagen original si existe
+    if (user.image) {
+      await fs.unlink(`${pathProfileImageFolder}/${user.image}`, () => {
+        console.log('Borrada imagen de perfil correctamente');
       });
     }
 
-    const randomName = randomstring.generate(10);
-    const imageName = `${id}-${randomName}${extension}`;
-    const pathImage = `${pathProfileImage}/${imageName}`;
+    const random = randomstring.generate(10);
 
+    const imageName = `${id}-${random}${extension}`;
+    // Path de la nueva imagen de perfil
+    const pathImage = `${pathProfileImageFolder}/${imageName}`;
+    //const pathImage = `${pathProfileImageFolder}/${id}${extension}`;
+
+    // Movemos la image a la ruta final /public/images/profiles/14-adfa324d.png
     profileImage.mv(pathImage, async function (err) {
-      if (err) throwJsonError(500, err.message);
-      await uploadUserImage(id, imageName);
+      if (err) return res.status(500).send(err);
+      await uploadUserProfileImage(id, imageName);
 
-      res.status(201);
-      res.send({ url : `${HTTP_SERVER}/${PATH_USER_IMAGE}/${imageName}`});
-    })
-  } catch (error) {
-    createJsonError(error, res);
+      res.send({ url: `${HTTP_SERVER_DOMAIN}/${PATH_USER_IMAGE}/${imageName}` });
+    });
+  } catch (err) {
+    createJsonError(err, res);
   }
 }
 

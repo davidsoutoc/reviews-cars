@@ -1,21 +1,19 @@
 'use strict';
 
 const Joi = require('joi');
-const { isAdmin } = require('../../helpers/utils');
+const { findUserById } = require('../../repositories/users-repository');
+const { findReviewsByUserId } = require('../../repositories/reviews-repository');
 const createJsonError = require('../../errors/create-json-error');
 const throwJsonError = require('../../errors/throw-json-error');
-const { findUserById, removeUserById } = require('../../repositories/users-repository');
+const { isAdmin } = require('../../helpers/utils');
 
 const schema = Joi.number().positive();
 
-async function deleteUserById(req, res) {
+async function getUserReviewsById(req, res) {
   try {
-    // Obtenemos el rol del JWT
     const { role } = req.auth;
-    // Chequeamos que no sea administrador
     isAdmin(role);
 
-    // Cogemos el id
     const { id } = req.params;
     await schema.validateAsync(id);
 
@@ -23,13 +21,12 @@ async function deleteUserById(req, res) {
     if (!user) {
       throwJsonError(400, 'Usuario no existe');
     }
+    const reviews = await findReviewsByUserId(id);
 
-    await removeUserById(id);
-
-    res.status(204).send();
+    res.send(reviews);
   } catch (err) {
     createJsonError(err, res);
   }
 }
 
-module.exports = deleteUserById;
+module.exports = getUserReviewsById;
